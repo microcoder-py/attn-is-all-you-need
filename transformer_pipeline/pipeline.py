@@ -14,6 +14,19 @@ from tfx.orchestration.beam.beam_dag_runner import BeamDagRunner
 
 import os
 
+_data_path = #add path to directory which contains all the training files
+_serving_dir = #add path to directory where you will be storing the final trained model
+_num_train_steps = #add number
+_num_eval_steps = #add number
+
+_pipeline_name = #name the pipeline
+_pipeline_root = #specify location of pipeline storage
+_metadata_root = #specify location for sqlite db that will facilitate metadata storage
+_beam_pipeline_args = [
+    '--direct_running_mode=multi_processing',
+    '--direct_num_workers=0',
+]
+
 output_config = example_gen_pb2.Output(
     split_config = example_gen_pb2.SplitConfig(
         splits = [
