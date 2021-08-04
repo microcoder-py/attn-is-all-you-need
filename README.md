@@ -11,6 +11,17 @@ I have not described the functioning of the pipeline here, but anyone who might 
 
 It is an example on text classification, but the difference between that and Neural Machine Translation should be apparent once you start reading the code carefully. Wherever needed, I have added additional comments in the code for better understanding, feel free to drop in questions if any
 
+## Prerequisites
+```python3```
+TFX: ```pip install tfx```
+TFX - Basic Shared Libraries: ```pip install tfx-bsl```
+
+## Execution
+1. Store your data in a CSV format in a folder titled ```data_root``` at same file hierarchy as ```pipeline.py```  
+2. Run ```python3 pipeline.py```
+
+If you want to change any defaults, do so by modifying the code
+
 ## CITATION
 
 ```citation
