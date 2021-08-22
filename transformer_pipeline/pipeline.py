@@ -60,12 +60,48 @@ trainer = Trainer(
     train_args = trainer_pb2.TrainArgs(num_steps = 100),
     eval_args = trainer_pb2.EvalArgs(num_steps = 10)
 )
+  
+model_resolver = resolver.Resolver(
+    strategy_class=latest_blessed_model_resolver.LatestBlessedModelResolver,
+    model=Channel(type=Model),
+    model_blessing=Channel(
+    type=ModelBlessing)).with_id('latest_blessed_model_resolver'
+                                )
+
+
+eval_config = tfma.EvalConfig(
+    model_specs=[tfma.ModelSpec(label_key='label')],
+    slicing_specs=[tfma.SlicingSpec()],
+    metrics_specs=[
+        tfma.MetricsSpec(metrics=[
+            tfma.MetricConfig(
+                class_name='SparseCategoricalCrossentropy',
+                threshold=tfma.MetricThreshold(
+                    value_threshold=tfma.GenericValueThreshold(
+                          lower_bound={'value': 0.01}),
+                      change_threshold=tfma.GenericChangeThreshold(
+                          direction=tfma.MetricDirection.HIGHER_IS_BETTER
+                          )
+                )
+            )
+          ])
+      ])
+
+evaluator = Evaluator(
+    examples=example_gen.outputs['examples'],
+    model=trainer.outputs['model'],
+    baseline_model=model_resolver.outputs['model'],
+    eval_config=eval_config
+)
 
 pusher = Pusher(
-      model=trainer.outputs['model'],
-      push_destination=pusher_pb2.PushDestination(
-          filesystem=pusher_pb2.PushDestination.Filesystem(
-              base_directory=_serving_dir)))
+    model=trainer.outputs['model'],
+    model_blessing=evaluator.outputs['blessing'],
+    push_destination=pusher_pb2.PushDestination(
+        filesystem=pusher_pb2.PushDestination.Filesystem(
+            base_directory=_serving_dir)
+      )
+)
 
 if __name__ == "__main__":
     pipeline_components = [
@@ -74,6 +110,7 @@ if __name__ == "__main__":
       schema_gen,
       transform,
       trainer,
+      evaluator, 
       pusher
     ]
 
