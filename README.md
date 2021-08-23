@@ -1,4 +1,4 @@
-# TFX Implementation of Attention is All You Need
+# Attention Pipelines Are All You Need
 A TFX implementation of the paper on transformers, [Attention is All You Need](https://arxiv.org/abs/1706.03762)
 
 ## To Understand Transformers
